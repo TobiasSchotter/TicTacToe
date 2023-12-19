@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Newtonsoft;
 
 public class GameManager : MonoBehaviour
 {
@@ -120,15 +121,18 @@ public class GameManager : MonoBehaviour
             _gameEnd = true;
             OnGameEnd?.Invoke(_gameEnd, _matchedPattern[0].Type);
         }
-        else if (_turn >= _maxMoves)
+/*        else if (_turn >= _maxMoves)
         {
             // TIE
             _gameEnd = true;
             OnGameEnd?.Invoke(_gameEnd, -1);
-        }
+        }*/
 
         _xSelection.UpdateMarkers();
         _oSelection.UpdateMarkers();
+
+/*        PrintDictionaryContents();*/
+        GetBoardStateAsJson();
     }
     public bool ToggleDevMode()
     {
@@ -146,4 +150,57 @@ public class GameManager : MonoBehaviour
         _xSelection.Reset();
         _oSelection.Reset();
     }
+
+    public string GetBoardStateAsJson()
+    {
+        if (_board != null)
+        {
+            List<List<Dictionary<string, object>>> boardState = new List<List<Dictionary<string, object>>>();
+
+            for (int i = 0; i < 3; i++) // Assuming 3 rows
+            {
+                List<Dictionary<string, object>> row = new List<Dictionary<string, object>>();
+
+                for (int j = 0; j < 3; j++) // Assuming 3 columns
+                {
+                    HitBox hitBox;
+                    if (_fields.TryGetValue($"{i},{j}", out hitBox))
+                    {
+                        Dictionary<string, object> cell = new Dictionary<string, object>
+                    {
+                        { "type", hitBox.Type == 0 ? "X" : hitBox.Type == 1 ? "O" : "-1" },
+                        { "size", hitBox.GetMarkerSize()}
+                    };
+                        row.Add(cell);
+                    }
+                    else
+                    {
+                        row.Add(new Dictionary<string, object> { { "type", " " }, { "size", 0 } });
+                    }
+                }
+                boardState.Add(row);
+            }
+
+            // Convert the list to JSON using Newtonsoft.Json
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(new { board = boardState });
+
+            Debug.Log(json);
+
+            return json;
+        }
+
+        return null;
+    }
+
+
+    public void PrintDictionaryContents()
+    {
+        foreach (var kvp in _fields)
+        {
+            string key = kvp.Key;
+            HitBox value = kvp.Value;
+            Debug.Log($"Key: {key}, Value: {value}");
+        }
+    }
+
 }

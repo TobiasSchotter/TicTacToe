@@ -60,28 +60,33 @@
             }
         }
 
-        private void OnMarkerSelected(bool selected, Marker marker) {
-            if (selected) {
-                if (_selectedMarker != null) {
+        private void OnMarkerSelected(bool selected, Marker marker)
+        {
+            if (selected)
+            {
+                if (_selectedMarker != null)
+                {
                     _selectedMarker.Deselect();
                 }
 
                 _selectedMarker = marker;
             }
-            else {
-                if (_selectedMarker == marker) {
+            else
+            {
+                if (_selectedMarker == marker)
+                {
                     _selectedMarker = null;
                 }
             }
         }
 
         private void Clear() {
-            _markers.ForEach(m => Destroy(m.gameObject));
+                _markers.ForEach(m => Destroy(m.gameObject));
 
-            _markers.Clear();
-        }
+                _markers.Clear();
+            }
 
-        public void Reset() {
-            Generate();
-        }
-    }
+            public void Reset() {
+                Generate();
+            }
+}

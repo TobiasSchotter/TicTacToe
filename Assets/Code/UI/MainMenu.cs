@@ -12,6 +12,7 @@ public class MainMenu : MonoBehaviour
 
     public void Play2d()
     {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 2);
     }
 
     public void GoToMainMenu()

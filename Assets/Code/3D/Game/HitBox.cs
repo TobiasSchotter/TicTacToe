@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -65,17 +66,23 @@ public class HitBox : MonoBehaviour
         if (CurrentMarker != null)
         {
             CurrentMarker.OverRuled(true);
+
+            CurrentMarker.Remove();
         }
 
         marker.SetPosition(transform.position, transform, this);
         _markers.Add(marker);
 
+        //PrintMarkers();
+
         _renderer.enabled = false;
         _markerPlaced = true;
+        marker.SetIsPlaced(true);
         _type = GameManager.Instance.Turn;
 
         GameManager.Instance.MoveMade();
     }
+
 
     public void RemoveMarker(Marker marker)
     {
@@ -88,5 +95,22 @@ public class HitBox : MonoBehaviour
         }
 
         _type = CurrentMarker.Type;
+    }
+
+    public void PrintMarkers()
+    {
+        foreach (var marker in _markers)
+        {
+            Debug.Log($"Marker Type: {marker.Type}, Size: {marker.Size}");
+        }
+    }
+
+    public int GetMarkerSize()
+    {
+        if (_markerPlaced)
+        {
+            return CurrentMarker.Size;
+        }
+        return -1;
     }
 }

@@ -13,6 +13,7 @@ public class Marker : MonoBehaviour
 
     public Action<bool, Marker> OnSelected;
 
+    /*private int _turnType;*/
     private int _turnType;
     private int _size;
     private bool _selected;
@@ -20,6 +21,7 @@ public class Marker : MonoBehaviour
     private Vector3 _cachePosition;
     private BoxCollider _collider;
     private HitBox _hitBox;
+    private bool _isPlaced;
 
     private bool CheckTurn
     {
@@ -37,6 +39,7 @@ public class Marker : MonoBehaviour
 
     public int Size => _size;
     public int Type => _turnType;
+    public bool IsPlaced => _isPlaced;
 
     private void Start()
     {
@@ -47,13 +50,19 @@ public class Marker : MonoBehaviour
 
     public void Check()
     {
-        if (_isOverRuled)
+        if (_isOverRuled || IsPlaced)
         {
-            _collider.enabled = false;
+            if (_collider != null)
+            {
+                _collider.enabled = false;
+            }
             return;
         }
 
-        _collider.enabled = CheckTurn;
+        if (_collider != null)
+        {
+            _collider.enabled = CheckTurn;
+        }
     }
 
     private void OnMouseEnter()
@@ -165,5 +174,32 @@ public class Marker : MonoBehaviour
     public void OverRuled(bool overRuled)
     {
         _isOverRuled = overRuled;
+
+    }
+
+    public void SetIsPlaced(bool isPlaced)
+    {
+        _isPlaced = isPlaced;
+    }
+
+    public void Remove()
+    {
+        // Remove the marker from its hitbox
+        if (_hitBox != null)
+        {
+            _hitBox.RemoveMarker(this);
+        }
+        // Additional cleanup or removal logic if needed
+        // For example, you may want to destroy the GameObject
+        Destroy(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        // Handle any cleanup logic here
+        // For example, removing references or performing additional cleanup
+
+        // Ensure that _collider is not accessed after the GameObject is destroyed
+        _collider = null;
     }
 }

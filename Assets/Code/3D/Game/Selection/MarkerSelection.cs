@@ -8,11 +8,17 @@
         [SerializeField] private MarkerInfo[] _markersInfo;
         [SerializeField] private float _spacing;
 
-        private readonly List<Marker> _markers = new List<Marker>();
+    private readonly List<Marker> _markers = new List<Marker>();
         private Marker _selectedMarker = null;
         private int _turn;
 
-        public Marker SelectedMarker => _selectedMarker;
+    private List<Marker> _markersPoolX = new List<Marker>();
+    private List<Marker> _markersPoolO = new List<Marker>();
+
+    public List<Marker> MarkersPoolX => _markersPoolX;
+    public List<Marker> MarkersPoolO => _markersPoolO;
+
+    public Marker SelectedMarker => _selectedMarker;
 
         [Serializable]
         private struct MarkerInfo {
@@ -22,9 +28,25 @@
 
         private void Start() {
             Generate();
+
+            //LogMarkersPool();
+
+    }
+    // debug function
+    public void LogMarkersPool()
+    {
+        foreach (var marker in _markersPoolX)
+        {
+            Debug.Log($"Marker in pool X: {marker}");
         }
 
-        public void UpdateMarkers() {
+        foreach (var marker in _markersPoolO)
+        {
+            Debug.Log($"Marker in pool O: {marker}");
+        }
+    }
+
+    public void UpdateMarkers() {
             _markers.ForEach(m => m.Check());
         }
 
@@ -53,9 +75,19 @@
                     marker.OnSelected += OnMarkerSelected;
                     marker.SetTurn(_turn);
                     marker.SetSize(i);
+
+                    // Add marker to the respective player's marker pool
+                    if (_turn == 0)
+                    {
+                        _markersPoolX.Add(marker);
+                    }
+                    else
+                    {
+                        _markersPoolO.Add(marker);
+                    }
                     _markers.Add(marker);
 
-                    index++;
+                index++;
                 }
             }
         }
@@ -80,13 +112,24 @@
             }
         }
 
-        private void Clear() {
-                _markers.ForEach(m => Destroy(m.gameObject));
-
-                _markers.Clear();
+    private void Clear()
+    {
+        foreach (var marker in _markers)
+        {
+            if (marker != null)
+            {
+                Destroy(marker.gameObject);
             }
+        }
 
-            public void Reset() {
-                Generate();
-            }
+        _markers.Clear();
+
+        // Clear player-specific marker pools
+        _markersPoolX.Clear();
+        _markersPoolO.Clear();
+    }
+
+    public void Reset() {
+         Generate();
+    }
 }

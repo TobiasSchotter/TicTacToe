@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Newtonsoft;
+using UnityEngine.Timeline;
 
 public class GameManager : MonoBehaviour
 {
@@ -56,7 +57,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
     private int _maxMoves => _rows * _rows;
 
     public event Action<bool, int> OnGameEnd;
@@ -78,7 +78,6 @@ public class GameManager : MonoBehaviour
             // Initialisierung für das normale TicTacToe
             _xSelection.SetTurn(0);
             _oSelection.SetTurn(1);
-
         }
         else if (currentScene.name == "3dGame")
         {
@@ -99,6 +98,8 @@ public class GameManager : MonoBehaviour
     {
         // store hit box with x y row as key
         _fields.Add($"{x},{y}", hitBox);
+
+        hitBox.Initialize(this, _xSelection, _oSelection);
     }
 
     public void Clear()
@@ -202,5 +203,6 @@ public class GameManager : MonoBehaviour
             Debug.Log($"Key: {key}, Value: {value}");
         }
     }
+
 
 }
